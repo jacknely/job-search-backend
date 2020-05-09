@@ -12,3 +12,4 @@ class ProductionConfig(Config):
 
 class DevConfig(Config):
     DEBUG = True
+    LOCATION = "TEST"
