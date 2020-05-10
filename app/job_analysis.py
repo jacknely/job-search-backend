@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import functools
 from datetime import datetime, timedelta
-from io import StringIO
 
 
 class JobAnalysis:

@@ -1,10 +1,9 @@
-To build image:
-```
-$ docker build -t job_search .
-```
+# :office: Job Search: SES & BackEnd
+Python application that reads jobs from a AWS DynamoDB that were scraped using [Job Scraper](https://github.com/jacknely/job_scrape_lambda)
 
-To run image in container:
-```
-$ docker run -v $(pwd):/opt -p 5001:5001 --rm job_search
-```
-Ensure commands are executed in app root directory
+## Requirement
+Install from requirements.txt:
+- Python 3.6, 3.7, 3.8
+- Boto3
+- Pandas
+- Flask
