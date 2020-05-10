@@ -1,6 +1,3 @@
-import os
-
-
 class Config(object):
     SECRET_KEY = "XXXXXXXTYUIO"
 
@@ -12,4 +9,5 @@ class ProductionConfig(Config):
 
 class DevConfig(Config):
     DEBUG = True
-    LOCATION = "TEST"
+    DEVELOPMENT = True
+    DB_ADDR = 'https://oe9tdngv19.execute-api.eu-west-1.amazonaws.com/dev'

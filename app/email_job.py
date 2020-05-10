@@ -1,11 +1,21 @@
 import boto3
 from botocore.exceptions import ClientError
+from jinja2 import Environment, FileSystemLoader
+from pathlib import Path
 
 
 class Email:
 
+    def send_weekly_mail(self, job_dict):
+        env = Environment(
+            loader=FileSystemLoader('%s/templates/' % Path(__file__).parent.parent))
+
+        template = env.get_template('weekly_email.html')
+        output = template.render(jobs=job_dict)
+        self.send_mail(output)
+
     @classmethod
-    def send_mail(cls):
+    def send_mail(cls, content):
         # Replace sender@example.com with your "From" address.
         # This address must be verified with Amazon SES.
         SENDER = "Jack Nelson <jackn926@gmail.com>"
@@ -26,27 +36,10 @@ class Email:
         SUBJECT = "New Job Alert"
 
         # The email body for recipients with non-HTML email clients.
-        BODY_TEXT = ("Hi Jack,\r\nr\n"
-                     "Check out this new job:\r\n\r\n"
-                     "Job: ****r\r\n"
-                     "Agency: ****r\r\n"
-                     )
+        BODY_TEXT = ("Cannot load mail without html")
 
         # The HTML body of the email.
-        BODY_HTML = """<html>
-        <head></head>
-        <body>
-          <h1>New Job Alert @ *****</h1>
-          <p>Hi Jack, </p>
-          <p>Check out this new job:
-          <ul>
-          <li>Title: <a href='https://aws.amazon.com/ses/'>*******</a></li>
-          <li>Agency: *****</li>
-          </ul>
-          </p>
-        </body>
-        </html>
-                    """
+        BODY_HTML = content
 
         # The character encoding for the email.
         CHARSET = "UTF-8"
@@ -93,4 +86,4 @@ class Email:
 
 
 if __name__ == "__main__":
-    Email.send_mail()
+    Email.send_mail("<html><body>I am a test mail</body></html>")

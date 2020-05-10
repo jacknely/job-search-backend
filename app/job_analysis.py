@@ -1,4 +1,8 @@
 import pandas as pd
+import numpy as np
+import functools
+from datetime import datetime, timedelta
+from io import StringIO
 
 
 class JobAnalysis:
@@ -13,23 +17,40 @@ class JobAnalysis:
         as an df then sets id as index
         :return: df of jobs
         """
-        jobs_import = pd.read_json(db_location)
-        jobs = jobs_import.set_index('id')
+        jobs_raw = pd.read_json(db_location, convert_dates=False)
+        jobs_raw['date'] = pd.to_datetime(jobs_raw['date'], format='%d/%m/%Y')
+        jobs = jobs_raw.set_index('id')
+
         return jobs
 
-    def get_jobs_not_reviewed(self) -> pd.DataFrame:
+    def weekly_summary(self, jobs=None):
         """
-        returns a df of jobs that have no been
-        reviewed in self.jobs
-        :return: df of jobs not reviewed
-        or ValueError if empty
+        returns a DataFrame of interested
+        jobs for the past week.
+        :param jobs: jobs
+        :return: filtered jobs
         """
-        jobs_not_reviewed = self.jobs[(self.jobs.reviewed == "N")]
-        if jobs_not_reviewed.empty:
-            raise ValueError("No jobs to be analysed")
-        return jobs_not_reviewed
+        if jobs is None:
+            jobs = self.jobs
+
+        c_1 = jobs.reviewed == "Y"
+        c_2 = jobs.email == "N"
+        c_3 = jobs.interested == "Y"
+
+        week = datetime.today() - timedelta(days=7)
+        c_4 = jobs.date >= week
+
+        jobs_filtered = jobs[self.__conjunction(c_1, c_2, c_3, c_4)]
+
+        return jobs_filtered
+
+    def __conjunction(*conditions):
+        return functools.reduce(np.logical_and, conditions)
 
 
 if __name__ == "__main__":
-    analysis = JobAnalysis('https://oe9tdngv19.execute-api.eu-west-1.amazonaws.com/dev')
-    print(analysis.get_jobs_not_reviewed())
+    db_address = "https://oe9tdngv19.execute-api.eu-west-1.amazonaws.com/dev"
+    analysis = JobAnalysis(db_address)
+    week_jobs = analysis.weekly_summary()
+
+
