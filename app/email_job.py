@@ -14,6 +14,14 @@ class Email:
         output = template.render(jobs=job_dict)
         self.send_mail(output)
 
+    def send_job_alert(self, job):
+        env = Environment(
+            loader=FileSystemLoader('%s/templates/' % Path(__file__).parent.parent))
+
+        template = env.get_template('alert_email.html')
+        output = template.render(job=job)
+        self.send_mail(output)
+
     @classmethod
     def send_mail(cls, content):
         # Replace sender@example.com with your "From" address.

@@ -36,21 +36,3 @@ class TestJobAnalysis:
                                  ])
 
     test_data_pd = pd.read_json(test_data_json)
-
-    def setup_method(self):
-        with patch("app.job_analysis.pd.read_json") as read_json_mock:
-            read_json_mock.return_value = self.test_data_pd
-            self.test_jobs = JobAnalysis('test')
-
-    @patch("app.job_analysis.pd.read_json")
-    def test_download_jobs(self, read_json_mock: Mock):
-        read_json_mock.return_value = self.test_data_pd
-        test_download = self.test_jobs.download_jobs('test')
-        print(test_download)
-
-        assert test_download.shape == (2, 12)
-
-    def test_jobs_not_reviewed(self):
-        test_not_reviewed = self.test_jobs.weekly_summary()
-
-        assert test_not_reviewed.shape == (1, 12)
