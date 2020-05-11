@@ -10,5 +10,3 @@ def create_app(config):
         app.register_blueprint(api)
 
     return app
-
-

@@ -9,6 +9,7 @@ verify_ssl = true
 boto3 = "*"
 pandas = "*"
 flask = "*"
+requests = "*"
 
 [requires]
 python_version = "3.8"
