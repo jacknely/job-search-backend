@@ -1,12 +1,13 @@
 import pytest
-from app.job_analysis import JobAnalysis
-import pandas as pd
-import json
+
+from app.jobs import Jobs
+
+from unittest.mock import patch
 
 
-class TestJobAnalysis:
+class TestJobs:
 
-    test_data_json = json.dumps([{"id": "90038429",
+    test_data_json = [{"id": "90038429",
                                   "title": "Python Developer",
                                   "company": "Durlston Partners London Limited",
                                   "contract": "Permanent",
@@ -32,22 +33,21 @@ class TestJobAnalysis:
                                   "interested": "Y",
                                   "reviewed": "Y",
                                   "email": "N"}
-                                 ])
-
-    test_data_pd = pd.read_json(test_data_json)
+                                 ]
 
     def setup_method(self):
-        self.jobs_anal = JobAnalysis(self.test_data_json)
+        with patch('app.jobs.requests.get') as mock:
+            mock.return_value.json.return_value = self.test_data_json
+            self.jobs = Jobs()
 
-    def test_get_as_pd(self):
-        expected = self.jobs_anal.get_as_pd(self.test_data_json)
+    @patch('app.jobs.requests.get')
+    def test_download_jobs(self, mock):
+        mock.return_value.json.return_value = self.test_data_json
+        expected = self.jobs.download_jobs()
 
-        assert expected.shape == (2, 12)
+        assert expected == self.test_data_json
 
-    def test_weekly_summary(self):
-        expected = self.jobs_anal.weekly_summary()
+    def test_get_job_by_id(self):
+        expected = self.jobs.get_job_by_id("90038429")
 
-        assert expected.shape == (1, 12)
-
-
-
+        assert expected.job['id'] == "90038429"
