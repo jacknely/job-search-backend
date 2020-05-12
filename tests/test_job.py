@@ -27,7 +27,6 @@ class TestJob:
     def test_put_job(self, mock):
         self.job.put_job()
 
-        assert mock.call_args.args[0] == self.job.api
         assert json.loads(mock.call_args.kwargs['data']) == self.test_data
 
     def test_update_job(self):
